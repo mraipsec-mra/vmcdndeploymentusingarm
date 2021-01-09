@@ -1,0 +1,167 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "value": "eastus"
+        },
+        "networkInterfaceName": {
+            "value": "mravm01718"
+        },
+        "networkSecurityGroupName": {
+            "value": "mravm01-nsg"
+        },
+        "networkSecurityGroupRules": {
+            "value": [
+                {
+                    "name": "RDP",
+                    "properties": {
+                        "priority": 300,
+                        "protocol": "TCP",
+                        "access": "Allow",
+                        "direction": "Inbound",
+                        "sourceAddressPrefix": "*",
+                        "sourcePortRange": "*",
+                        "destinationAddressPrefix": "*",
+                        "destinationPortRange": "3389"
+                    }
+                }
+            ]
+        },
+        "subnetName": {
+            "value": "default"
+        },
+        "virtualNetworkName": {
+            "value": "ravindra-rg-vnet"
+        },
+        "addressPrefixes": {
+            "value": [
+                "10.0.0.0/24"
+            ]
+        },
+        "subnets": {
+            "value": [
+                {
+                    "name": "default",
+                    "properties": {
+                        "addressPrefix": "10.0.0.0/24"
+                    }
+                }
+            ]
+        },
+        "publicIpAddressName": {
+            "value": "mravm01-ip"
+        },
+        "publicIpAddressType": {
+            "value": "Static"
+        },
+        "publicIpAddressSku": {
+            "value": "Standard"
+        },
+        "virtualMachineName": {
+            "value": "mravm01"
+        },
+        "virtualMachineComputerName": {
+            "value": "mravm01"
+        },
+        "virtualMachineRG": {
+            "value": "ravindra-rg"
+        },
+        "osDiskType": {
+            "value": "Premium_LRS"
+        },
+        "virtualMachineSize": {
+            "value": "Standard_B1s"
+        },
+        "adminUsername": {
+            "value": "raadmin"
+        },
+        "adminPassword": {
+            "value": "Er332R3*23346!"
+        },
+        "patchMode": {
+            "value": "AutomaticByOS"
+        },
+        "zone": {
+            "value": "1"
+        },
+        "storageAccountName": {
+            "value": "rastorageaccount25459"
+        },
+        "accountType": {
+            "value": "Standard_LRS"
+        },
+        "kind": {
+            "value": "StorageV2"
+        },
+        "accessTier": {
+            "value": "Hot"
+        },
+        "minimumTlsVersion": {
+            "value": "TLS1_2"
+        },
+        "supportsHttpsTrafficOnly": {
+            "value": true
+        },
+        "allowBlobPublicAccess": {
+            "value": true
+        },
+        "networkAclsBypass": {
+            "value": "AzureServices"
+        },
+        "networkAclsDefaultAction": {
+            "value": "Allow"
+        },
+        "isBlobSoftDeleteEnabled": {
+            "value": true
+        },
+        "blobSoftDeleteRetentionDays": {
+            "value": 7
+        },
+        "profileName": {
+            "value": "racdn"
+        },
+        "endpointName": {
+            "value": "racdn001"
+        },
+        "cdnlocation": {
+            "value": "Global"
+        },
+        "sku": {
+            "value": {
+                "name": "Standard_Akamai"
+            }
+        },
+        "profileProperties": {
+            "value": {}
+        },
+        "endpointProperties": {
+            "value": {
+                "isHttpAllowed": true,
+                "isHttpsAllowed": true,
+                "originHostHeader": "rastorageaccount25459.blob.core.windows.net",
+                "origins": [
+                    {
+                        "name": "rastorageaccount25459-blob-core-windows-net",
+                        "properties": {
+                            "hostName": "rastorageaccount25459.blob.core.windows.net",
+                            "httpPort": 80,
+                            "httpsPort": 443
+                        }
+                    }
+                ],
+                "isCompressionEnabled": true,
+                "contentTypesToCompress": [
+                    "text/plain",
+                    "text/html",
+                    "text/css",
+                    "text/javascript",
+                    "application/x-javascript",
+                    "application/javascript",
+                    "application/json",
+                    "application/xml"
+                ]
+            }
+        }
+    }
+}

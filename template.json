@@ -1,0 +1,333 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string"
+        },
+        "networkInterfaceName": {
+            "type": "string"
+        },
+        "networkSecurityGroupName": {
+            "type": "string"
+        },
+        "networkSecurityGroupRules": {
+            "type": "array"
+        },
+        "subnetName": {
+            "type": "string"
+        },
+        "virtualNetworkName": {
+            "type": "string"
+        },
+        "addressPrefixes": {
+            "type": "array"
+        },
+        "subnets": {
+            "type": "array"
+        },
+        "publicIpAddressName": {
+            "type": "string"
+        },
+        "publicIpAddressType": {
+            "type": "string"
+        },
+        "publicIpAddressSku": {
+            "type": "string"
+        },
+        "virtualMachineName": {
+            "type": "string"
+        },
+        "virtualMachineComputerName": {
+            "type": "string"
+        },
+        "virtualMachineRG": {
+            "type": "string"
+        },
+        "osDiskType": {
+            "type": "string"
+        },
+        "virtualMachineSize": {
+            "type": "string"
+        },
+        "adminUsername": {
+            "type": "string"
+        },
+        "adminPassword": {
+            "type": "secureString"
+        },
+        "patchMode": {
+            "type": "string"
+        },
+        "zone": {
+            "type": "string"
+        },
+        "storageAccountName": {
+            "type": "string"
+        },
+        "accountType": {
+            "type": "string"
+        },
+        "kind": {
+            "type": "string"
+        },
+        "accessTier": {
+            "type": "string"
+        },
+        "minimumTlsVersion": {
+            "type": "string"
+        },
+        "supportsHttpsTrafficOnly": {
+            "type": "bool"
+        },
+        "allowBlobPublicAccess": {
+            "type": "bool"
+        },
+        "networkAclsBypass": {
+            "type": "string"
+        },
+        "networkAclsDefaultAction": {
+            "type": "string"
+        },
+        "isBlobSoftDeleteEnabled": {
+            "type": "bool"
+        },
+        "blobSoftDeleteRetentionDays": {
+            "type": "int"
+        },
+         "profileName": {
+            "type": "string"
+        },
+        "endpointName": {
+            "type": "string"
+        },
+        "cdnlocation": {
+            "type": "string"
+        },
+        "sku": {
+            "type": "object"
+        },
+        "profileProperties": {
+            "type": "object"
+        },
+        "endpointProperties": {
+            "type": "object"
+        }
+    },
+    "variables": {
+        "nsgId": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroupName'))]",
+        "vnetId": "[resourceId(resourceGroup().name,'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
+        "subnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]"
+    },
+    "resources": [
+        {
+            "name": "[parameters('networkInterfaceName')]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2018-10-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/networkSecurityGroups/', parameters('networkSecurityGroupName'))]",
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]",
+                "[concat('Microsoft.Network/publicIpAddresses/', parameters('publicIpAddressName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "subnet": {
+                                "id": "[variables('subnetRef')]"
+                            },
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIpAddress": {
+                                "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/publicIpAddresses', parameters('publicIpAddressName'))]"
+                            }
+                        }
+                    }
+                ],
+                "networkSecurityGroup": {
+                    "id": "[variables('nsgId')]"
+                }
+            },
+            "tags": {
+                "Owner": "ravindra aditya"
+            }
+        },
+        {
+            "name": "[parameters('networkSecurityGroupName')]",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2019-02-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "securityRules": "[parameters('networkSecurityGroupRules')]"
+            },
+            "tags": {
+                "Owner": "ravindra aditya"
+            }
+        },
+        {
+            "name": "[parameters('virtualNetworkName')]",
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2019-09-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": "[parameters('addressPrefixes')]"
+                },
+                "subnets": "[parameters('subnets')]"
+            },
+            "tags": {
+                "Owner": "ravindra aditya"
+            }
+        },
+        {
+            "name": "[parameters('publicIpAddressName')]",
+            "type": "Microsoft.Network/publicIpAddresses",
+            "apiVersion": "2019-02-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "publicIpAllocationMethod": "[parameters('publicIpAddressType')]"
+            },
+            "sku": {
+                "name": "[parameters('publicIpAddressSku')]"
+            },
+            "zones": [
+                "[parameters('zone')]"
+            ],
+            "tags": {
+                "Owner": "ravindra aditya"
+            }
+        },
+        {
+            "name": "[parameters('virtualMachineName')]",
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2020-06-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/networkInterfaces/', parameters('networkInterfaceName'))]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('virtualMachineSize')]"
+                },
+                "storageProfile": {
+                    "osDisk": {
+                        "createOption": "fromImage",
+                        "managedDisk": {
+                            "storageAccountType": "[parameters('osDiskType')]"
+                        }
+                    },
+                    "imageReference": {
+                        "publisher": "MicrosoftWindowsServer",
+                        "offer": "WindowsServer",
+                        "sku": "2016-Datacenter",
+                        "version": "latest"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaceName'))]"
+                        }
+                    ]
+                },
+                "osProfile": {
+                    "computerName": "[parameters('virtualMachineComputerName')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]",
+                    "windowsConfiguration": {
+                        "enableAutomaticUpdates": true,
+                        "provisionVmAgent": true,
+                        "patchSettings": {
+                            "patchMode": "[parameters('patchMode')]"
+                        }
+                    }
+                },
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": true
+                    }
+                }
+            },
+            "tags": {
+                "Owner": "ravindra aditya"
+            },
+            "zones": [
+                "[parameters('zone')]"
+            ]
+        },
+        {
+            "name": "[parameters('storageAccountName')]",
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2019-06-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "accessTier": "[parameters('accessTier')]",
+                "minimumTlsVersion": "[parameters('minimumTlsVersion')]",
+                "supportsHttpsTrafficOnly": "[parameters('supportsHttpsTrafficOnly')]",
+                "allowBlobPublicAccess": "[parameters('allowBlobPublicAccess')]",
+                "networkAcls": {
+                    "bypass": "[parameters('networkAclsBypass')]",
+                    "defaultAction": "[parameters('networkAclsDefaultAction')]",
+                    "ipRules": []
+                }
+            },
+            "dependsOn": [],
+            "sku": {
+                "name": "[parameters('accountType')]"
+            },
+            "kind": "[parameters('kind')]",
+            "tags": {
+                "Owner": "ravindra aditya"
+            }
+        },
+        {
+            "name": "[concat(parameters('storageAccountName'), '/default')]",
+            "type": "microsoft.storage/storageaccounts/blobServices",
+            "apiVersion": "2019-06-01",
+            "properties": {
+                "deleteRetentionPolicy": {
+                    "enabled": "[parameters('isBlobSoftDeleteEnabled')]",
+                    "days": "[parameters('blobSoftDeleteRetentionDays')]"
+                }
+            },
+            "dependsOn": [
+                "[concat('microsoft.storage/storageaccounts/', parameters('storageAccountName'))]"
+            ],
+             "tags": {
+                "Owner": "ravindra aditya"
+            }
+        },
+        {
+            "apiVersion": "2020-04-15",
+            "name": "[parameters('profileName')]",
+            "location": "[parameters('cdnlocation')]",
+            "sku": "[parameters('sku')]",
+            "properties": "[parameters('profileProperties')]",
+            "type": "microsoft.cdn/profiles",
+            "dependsOn": [
+                "[concat('microsoft.storage/storageaccounts/', parameters('storageAccountName'))]"
+            ]
+        },
+        {
+            "apiVersion": "2020-04-15",
+            "dependsOn": [
+                "[concat('microsoft.storage/storageaccounts/', parameters('storageAccountName'))]",
+                "[concat('Microsoft.Cdn/profiles/', parameters('profileName'))]"
+            ],
+            "name": "[concat(parameters('profileName'),'/',parameters('endpointName'))]",
+            "location": "[parameters('cdnlocation')]",
+            "properties": "[parameters('endpointProperties')]",
+            "type": "microsoft.cdn/profiles/endpoints",
+             "tags": {
+                "Owner": "ravindra aditya"
+            }
+        }
+    ],
+    "outputs": {
+        "adminUsername": {
+            "type": "string",
+            "value": "[parameters('adminUsername')]"
+        }
+    }
+}
